@@ -19,7 +19,7 @@ def Ergun(C_array,T_array, M_molar, mu_vis, D_particle,epsi_void,d,dd,d_fo, N):
     P = np.zeros(N)
     for cc in C_array: 
         P = P + cc*R_gas*T_array
-    dP = d_fo@P
+    dP = d@P
     
     Vs_Vg = (1-epsi_void)/epsi_void
     A =1.75*rho_g/D_particle*Vs_Vg
@@ -35,7 +35,7 @@ def Ergun(C_array,T_array, M_molar, mu_vis, D_particle,epsi_void,d,dd,d_fo, N):
     v_return[ind_posi] = v_pos
     v_return[ind_nega] = v_neg
     
-    dv_return = d@v_return
+    dv_return = d_fo@v_return
     return v_return, dv_return
 
 def Ergun_test(dP,M_molar, mu_vis, D_particle,epsi_void):
@@ -368,10 +368,8 @@ class column:
                 dCdt_tmp = -v*dC[ii] -C[ii]*dv + D_dis[ii]*ddC[ii] - (1-epsi)/epsi*rho_s*dqdt[ii]
                 #dCdt_tmp[0] = +(v_in*C_sta[ii] - v[1]*C[ii][0])/h - (1-epsi)/epsi*rho_s*dqdt[ii][0]
                 #dCdt_tmp[-1]= +(v[-1]*C[ii][-2]- v_out*C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
-                #dCdt_tmp[0] = v_in*(C_sta[ii]-C[ii][0])/h- (1-epsi)/epsi*rho_s*dqdt[ii][0]
-                #dCdt_tmp[-1]= +(v_out+v[-1])/2*(C[ii][-2]- C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
-                dCdt_tmp[0] = (v_in*C_sta[ii]-v[0]*C[ii][0])/h- (1-epsi)/epsi*rho_s*dqdt[ii][0]
-                dCdt_tmp[-1]= +(v[-2]*C[ii][-2]- v_out*C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
+                dCdt_tmp[0] = v_in*(C_sta[ii]-C[ii][0])/h- (1-epsi)/epsi*rho_s*dqdt[ii][0]
+                dCdt_tmp[-1]= +(v_out+v[-1])/2*(C[ii][-2]- C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
                 dCdt.append(dCdt_tmp)
  
             dydt_tmp = dCdt+dqdt
@@ -518,10 +516,8 @@ class column:
             for ii in range(n_comp):
                 dCdt_tmp = -v*dC[ii] -C[ii]*dv + D_dis[ii]*ddC[ii] - (1-epsi)/epsi*rho_s*dqdt[ii]
                 #dCdt_tmp[0] = +(v_in*C_sta[ii] - v[1]*C[ii][0])/h - (1-epsi)/epsi*rho_s*dqdt[ii][0]    
-                #dCdt_tmp[0] = +v_in*(C_sta[ii] - C[ii][0])/h - (1-epsi)/epsi*rho_s*dqdt[ii][0]
-                #dCdt_tmp[-1]= +(v_out+v[-1])/2*(C[ii][-2]- C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
-                dCdt_tmp[0] = (v_in*C_sta[ii]-v[0]*C[ii][0])/h- (1-epsi)/epsi*rho_s*dqdt[ii][0]
-                dCdt_tmp[-1]= +(v[-2]*C[ii][-2]- v_out*C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
+                dCdt_tmp[0] = +v_in*(C_sta[ii] - C[ii][0])/h - (1-epsi)/epsi*rho_s*dqdt[ii][0]
+                dCdt_tmp[-1]= +(v_out+v[-1])/2*(C[ii][-2]- C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
                 dCdt.append(dCdt_tmp)
             # Temperature (gas)
             Cov_Cpg = np.zeros(N) # Heat capacity (overall) J/K/m^3
@@ -688,11 +684,9 @@ class column:
             dCdt = []
             for ii in range(n_comp):
                 dCdt_tmp = -v*dC[ii] -C[ii]*dv + D_dis[ii]*ddC[ii] - (1-epsi)/epsi*rho_s*dqdt[ii]
-                #dCdt_tmp[0] = +(v_in*C_sta[ii] - v[1]*C[ii][0])/h - (1-epsi)/epsi*rho_s*dqdt[ii][0]    
+                dCdt_tmp[0] = +(v_in*C_sta[ii] - v[1]*C[ii][0])/h - (1-epsi)/epsi*rho_s*dqdt[ii][0]    
                 #dCdt_tmp[0] = +(v_in*C_sta[ii] - v[1]*C[ii][0])/h - (1-epsi)/epsi*rho_s*dqdt[ii][0]
-                #dCdt_tmp[-1]= +(v[-1]*C[ii][-2]- v_out*C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
-                dCdt_tmp[0] = (v_in*C_sta[ii]-v[0]*C[ii][0])/h- (1-epsi)/epsi*rho_s*dqdt[ii][0]
-                dCdt_tmp[-1]= +(v[-2]*C[ii][-2]- v_out*C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
+                dCdt_tmp[-1]= +(v[-1]*C[ii][-2]- v_out*C[ii][-1])/h - (1-epsi)/epsi*rho_s*dqdt[ii][-1]
                 dCdt.append(dCdt_tmp)
             # Temperature (gas)
             Cov_Cpg = np.zeros(N) # Heat capacity (overall) J/K/m^3
@@ -705,10 +699,10 @@ class column:
                 dTgdt = dTgdt + h_ambi*4/epsi/D_col*(T_ambi - Tg)/Cov_Cpg
 
             dTgdt[0] = h_heat*a_surf/epsi*(Ts[0] - Tg[0])/Cov_Cpg[0]
-            dTgdt[0] = dTgdt[0] + (v_in*self._T_in*Cov_Cpg_in/Cov_Cpg[0] - v[0]*Tg[0])/h
+            dTgdt[0] = dTgdt[0] + (v_in*self._T_in*Cov_Cpg_in/Cov_Cpg[0] - v[1]*Tg[0])/h
             dTgdt[-1] = h_heat*a_surf/epsi*(Ts[-1] - Tg[-1])/Cov_Cpg[-1]
             #dTgdt[-1] = dTgdt[-1] + (v[-1]*Tg[-2]*Cov_Cpg[-2]/Cov_Cpg[-1] - v_out*Tg[-1])/h
-            dTgdt[-1] = dTgdt[-1] + (v[-2]*Tg[-2]*Cov_Cpg[-2]/Cov_Cpg[-1] - v_out*Tg[-1])/h
+            dTgdt[-1] = dTgdt[-1] + (v[-1]*Tg[-2]*Cov_Cpg[-2]/Cov_Cpg[-1] - v_out*Tg[-1])/h
             for ii in range(n_comp):
                 dTgdt[0] = dTgdt[0] - Tg[0]*Cpg[ii]*dCdt[ii][0]/Cov_Cpg[0]
                 dTgdt[-1] = dTgdt[-1] - Tg[-1]*Cpg[ii]*dCdt[ii][-1]/Cov_Cpg[-1]
@@ -2179,7 +2173,7 @@ if __name__ == '__main__':
     ## Mass transfer coefficients
     D_dis_test = [1E-6, 1E-6]   # m^2/sec
     k_MTC = [0.0002, 0.0002]    # m/sec
-    a_surf = 200                # m^2/m^3
+    a_surf = 400                # m^2/m^3
     c1.mass_trans_info(k_MTC, a_surf, D_dis_test)
 
     ## Thermal properties
@@ -2228,7 +2222,7 @@ if __name__ == '__main__':
     0.0*Cvin_test,Cvout_test,Q_in_test,False, foward_flow_direction=True)
     c2.boundaryC_info(Pout_test,Pin_test,Tin_test,yin_test,
     0.0*Cvin_test,0,Q_in_test,False, foward_flow_direction=True)
-    '''
+
     step_P_eq(
         c1,c2,100,n_sec = 50,
         valve_select = [1,1],
@@ -2242,7 +2236,6 @@ if __name__ == '__main__':
     c2.Graph(10,2, loc =Legend_loc)
     c2.Graph(10,3, loc = Legend_loc)
     plt.show( )
-    '''
     
 # %%
 
