@@ -77,20 +77,24 @@ def change_node_fn(z_raw, y_raw, N_new):
         for yr in y_raw:
             fn_tmp = interp1d(z_raw,yr)
             y_new_tmp = fn_tmp(z_new)
+            y_new_tmp[y_new_tmp < 0] = 0
             y_return.append(y_new_tmp)
     elif len(y_raw.shape) == 1:
         yy = y_raw
         fn_tmp = interp1d(z_raw, yy, kind = 'cubic')
         z_new = np.linspace(z_raw[0], z_raw[-1],N_new)
         y_return = fn_tmp(z_new)
+        y_return[y_return < 0] = 0
     elif len(y_raw.shape) == 2:
         yy = y_raw[-1,:]
         fn_tmp = interp1d(z_raw, yy, kind = 'cubic')
         z_new = np.linspace(z_raw[0], z_raw[-1],N_new)
         y_return = fn_tmp(z_new)
+        y_return[y_return < 0] = 0
     else:
         print('Input should be 1d or 2d array.')
         return None
+    
     return y_return
 
 # %% Column class
@@ -705,6 +709,7 @@ class column:
                 v_in = self._Q_in/epsi/self._A
             else:
                 v_in = max(self._Cv_in*(self._P_in - P_ov[0]/1E5), 0 )  # pressure in bar           
+                v_in = self._Cv_in*(self._P_in - P_ov[0]/1E5)  # pressure in bar           
             v_out = max(self._Cv_out*(P_ov[-1]/1E5 - self._P_out), 0 )  # pressure in bar
             
             # Gas phase concentration
@@ -783,7 +788,7 @@ class column:
             if CPUtime_print:
                 print('Simulation of this step is completed.')
                 print('This took {0:9.3f} mins to run. \n'.format(toc))
-            return y_result
+            return y_result, self._z, t_dom
         
         if self._required['Flow direction'] == 'Backward':
             y_tmp = []
@@ -1110,7 +1115,7 @@ n_sec=5, Cv_btw=0.1, valve_select = [1,1], CPUtime_print = False):
     C_sta1 = np.zeros(n_comp)
     for ii in range(n_comp):
         C_sta1[ii] = c1_tmp._y_init[ii][0]*P_mean/R_gas/T_mean*1E5
-    print(C_sta1)
+    #print(C_sta1)
 
     t_dom = np.linspace(0,t_max_int, n_t)
     column1._n_sec = n_sec
