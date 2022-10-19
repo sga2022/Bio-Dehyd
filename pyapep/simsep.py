@@ -2,7 +2,7 @@
 # %% Import packages
 import numpy as np
 #from numpy.lib.function_base import _parse_input_dimensions
-from scipy.integrate import odeint
+from scipy.integrate import odeint, solve_ivp
 import matplotlib.pyplot as plt
 import time
 from scipy.interpolate import interp1d
@@ -653,7 +653,7 @@ class column:
             C_sta.append(self._y_in[ii]*self._P_in/R_gas/self._T_in*1E5)
             Cov_Cpg_in = Cov_Cpg_in + Cpg[ii]*C_sta[ii]
         
-        def massmomeenerbal(y,t):
+        def massmomeenerbal(y, t):
             C = []
             q = []
             for ii in range(n_comp):
@@ -776,7 +776,9 @@ class column:
         y0 = np.concatenate(y0_tmp)
         
         #RUN
-        y_result = odeint(massmomeenerbal,y0,t_dom,)
+        y_result = odeint(massmomeenerbal,y0, t_dom,)
+        #y_ivp = solve_ivp(massmomeenerbal,t_dom, y0,method = 'BDF')
+        #y_result = y_ivp.y
         C_sum = 0
         for ii in range(n_comp):
             C_sum = C_sum + y_result[-1,ii*N+2]

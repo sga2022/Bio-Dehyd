@@ -54,20 +54,24 @@ c1.thermal_info(dH_ad, Cp_solid, Cp_gas, h_heat)
 # %%
 # Boundary conditions
 P_inlet = 11.0              # inlet pressure (bar)
-y_inlet = [0.5, 0.5, 1]     # inlet mole fraction (mol/mol)
+y_inlet = [0, 0, 1]     # inlet mole fraction (mol/mol)
 T_inlet = 300               # inlet temperature (K)
 # Q_inlet = 0.2*A_cros*0.3  # volumetric flowrate (m^3/sec)
-Cv_inlet = 0.1E-1             # inlet valve constant (m/sec/bar)
+Cv_inlet = 0.02E-1             # inlet valve constant (m/sec/bar)
 
-P_outlet = 10.3              # outlet pressure (bar)
-Cv_outlet= 0.4E-1           # outlet valve constant (m/sec/bar)
+P_outlet = 10.0              # outlet pressure (bar)
+Cv_outlet= 2.0E-1           # outlet valve constant (m/sec/bar)
+
+Q_feed = 0.05*A_cros  # volumetric flowrate (m^3/sec)
 
 c1.boundaryC_info(P_outlet, P_inlet, T_inlet, y_inlet,
-                  Cv_inlet, Cv_outlet, assigned_v_option = False)
+                  Cv_inlet, Cv_outlet, 
+                  Q_inlet = Q_feed,
+                  assigned_v_option = True)
 
 # %%
 # Initial conditions
-P_init = 10.4*np.ones(N)    # (bar)
+P_init = 10.5*np.ones(N)    # (bar)
 y_init = [0.5*np.ones(N), 0.5*np.ones(N), 0*np.ones(N)] # (mol/mol)
 T_init = 300*np.ones(N)
 q_init = iso_fn(P_init*np.array(y_init), T_init)
@@ -76,14 +80,16 @@ c1.initialC_info(P_init, T_init, T_init, y_init, q_init)
 
 # %%
 # RUN
-c1.change_init_node(51)
+c1.change_init_node(101)
 print(c1)
-y_res, z_res, t_res = c1.run_mamoen(25,n_sec = 10, CPUtime_print = True)
+y_res, z_res, t_res = c1.run_mamoen(25,n_sec = 20, 
+                                    CPUtime_print = True)
 
 # %%
 fig = c1.Graph(1, 0)
 fig = c1.Graph(1, 1)
 #print(fig)
+
 
 # %%
 #c1.Graph(1, 2)
