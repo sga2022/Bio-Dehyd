@@ -125,10 +125,14 @@ iso_fun_lists = None, iso_fun_index = None, tol = 1.0E-5):
                 iso_fun_lists.append([DSLa,])
     if iso_fun_index == None:
         iso_fun_index = []
+        iso_fun_index.append(["Langmuir","Freundlich"])
+        iso_fun_index.append(["Quadratic","Sips"])
+        iso_fun_index.append(["Dual-site Langmuire"])
+        '''
         for isolii in iso_fun_lists:
             indx_tmp = list(range(len(isolii)))
             iso_fun_index.append(indx_tmp)
-
+        '''
     optfn_list = []
     optx_list = []
     iso_best_list = []
@@ -180,7 +184,7 @@ def fit_diffT(p_list, q_list, T_list, i_ref,
             iso_par_nums, iso_fun_lists, iso_fun_index, tol)
     iso_ref, param_ref, model_ref, fnval_ref = fit_res_ref
     #print(model_ref)
-    print(fit_res_ref)
+    #print(fit_res_ref)
     n_da = len(T_list)
     theta_list = []
     p_norm = []
@@ -232,12 +236,15 @@ def fit_diffT(p_list, q_list, T_list, i_ref,
             iso_par_nums, iso_fun_lists, iso_fun_index, tol)
 
             #p_norm_arr,q_norm_arr, tol = 1E-5)
-    iso_all = fit_res_all[0]
+    iso_ref = fit_res_all[0]
     err_fit_all = fit_res_all[3]
     iso_params = fit_res_all[1]
     str_best = fit_res_all[2]
+    R_gas = 8.3145
+    iso_all = lambda P_in, T_in : np.reshape(iso_ref(P_in*np.exp(dH/R_gas*(1/T_in - 1/T_ref))), [-1,])
+    iso_all = lambda P_in, T_in : iso_ref(P_in*np.exp(dH/R_gas*(1/T_in - 1/T_ref)))
     #print(err_fit_all)
-    print(fit_res_all[2])
+    #print(fit_res_all[2])
     #q_pre_norm = iso_ref(p_norm_arr)
     #diff_all = (q_pre_norm - q_norm_arr)/(q_norm_arr+1E-3)
     #err_fit_all = np.mean(diff_all**2)
